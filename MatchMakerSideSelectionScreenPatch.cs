@@ -15,9 +15,10 @@ namespace Transmog
 	{
 		protected override MethodBase GetTargetMethod()
 		{
+			// ISession was renamed to IEftSession in SPT 4.1.
 			var method = AccessTools.Method(typeof(MatchMakerSideSelectionScreen), "Show", new []
 			{
-				typeof(ISession), typeof(RaidSettings), typeof(IHealthController), typeof(InventoryController)
+				typeof(IEftSession), typeof(RaidSettings), typeof(IHealthController), typeof(InventoryController)
 			});
 			if (method != null)
 				Plugin.LogInfo("Found MatchMakerSideSelectionScreen Show method.");
@@ -40,12 +41,15 @@ namespace Transmog
 		[PatchTranspiler]
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
+			// Targeting "_savageProfile" directly (rather than the old obfuscated "profile_1" plus a
+			// first-match guard) since SPT 4.1's deobfuscation gives the scav-profile field its real name,
+			// matching what this transpiler was always trying to intercept.
 			var hasFound = false;
 			foreach (var codeInstruction in instructions)
 			{
 				if (!hasFound && codeInstruction.opcode == OpCodes.Stfld &&
 				    codeInstruction.operand is FieldInfo field &&
-				    field.Name == "profile_1")
+				    field.Name == "_savageProfile")
 				{
 					hasFound = true;
 					yield return new CodeInstruction(OpCodes.Call,

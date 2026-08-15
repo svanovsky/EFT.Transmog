@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using EFT.Communications;
 using EFT.InventoryLogic;
 using EFT.UI;
 using IcyClawz.CustomInteractions;
@@ -77,8 +78,9 @@ namespace Transmog
 						Caption = () => $"Set as {pmcCallname}{name}",
 						Action = () =>
 						{
-							NotificationManagerClass.DisplayMessageNotification(
-								$"Set {item.LocalizedShortName()} as Your PMC's visual {name.ToLowerInvariant()}.");
+							NotificationManager.DisplayMessageNotification(
+								$"Set {item.ShortName} as Your PMC's visual {name.ToLowerInvariant()}.",
+								ENotificationDurationType.Default, ENotificationIconType.Default, null);
 							Plugin.PmcEquipments[i1].Set(item);
 						}
 					};
@@ -89,8 +91,9 @@ namespace Transmog
 							Caption = () => $"Set as Scav {name}",
 							Action = () =>
 							{
-								NotificationManagerClass.DisplayMessageNotification(
-									$"Set {item.LocalizedShortName()} as Your Scav's visual {name.ToLowerInvariant()}.");
+								NotificationManager.DisplayMessageNotification(
+									$"Set {item.ShortName} as Your Scav's visual {name.ToLowerInvariant()}.",
+									ENotificationDurationType.Default, ENotificationIconType.Default, null);
 								Plugin.ScavEquipments[i1].Set(item);
 							}
 						};
@@ -100,8 +103,9 @@ namespace Transmog
 						Caption = () => $"Hide {pmcCallname}{name}",
 						Action = () =>
 						{
-							NotificationManagerClass.DisplayMessageNotification(
-								$"Your PMC's {name.ToLowerInvariant()} will be visually hidden.");
+							NotificationManager.DisplayMessageNotification(
+								$"Your PMC's {name.ToLowerInvariant()} will be visually hidden.",
+								ENotificationDurationType.Default, ENotificationIconType.Default, null);
 							Plugin.PmcEquipments[i1].Hide();
 						}
 					};
@@ -112,8 +116,9 @@ namespace Transmog
 							Caption = () => $"Hide Scav {name}",
 							Action = () =>
 							{
-								NotificationManagerClass.DisplayMessageNotification(
-									$"Your Scav's {name.ToLowerInvariant()} will be visually hidden.");
+								NotificationManager.DisplayMessageNotification(
+									$"Your Scav's {name.ToLowerInvariant()} will be visually hidden.",
+									ENotificationDurationType.Default, ENotificationIconType.Default, null);
 								Plugin.ScavEquipments[i1].Hide();
 							}
 						};
@@ -125,8 +130,9 @@ namespace Transmog
 							Caption = () => $"Reset {pmcCallname}{name}",
 							Action = () =>
 							{
-								NotificationManagerClass.DisplayMessageNotification(
-									$"Your PMC's {name.ToLowerInvariant()} will be shown normally.");
+								NotificationManager.DisplayMessageNotification(
+									$"Your PMC's {name.ToLowerInvariant()} will be shown normally.",
+									ENotificationDurationType.Default, ENotificationIconType.Default, null);
 								Plugin.PmcEquipments[i1].Reset();
 							}
 						};
@@ -138,8 +144,9 @@ namespace Transmog
 							Caption = () => $"Reset Scav {name}",
 							Action = () =>
 							{
-								NotificationManagerClass.DisplayMessageNotification(
-									$"Your Scav's {name.ToLowerInvariant()} will be shown normally.");
+								NotificationManager.DisplayMessageNotification(
+									$"Your Scav's {name.ToLowerInvariant()} will be shown normally.",
+									ENotificationDurationType.Default, ENotificationIconType.Default, null);
 								Plugin.ScavEquipments[i1].Reset();
 							}
 						};

@@ -7,7 +7,8 @@ namespace Transmog
 {
 	public class PlayerModelViewPatch : ModulePatch
 	{
-		// LastPlayerStateClass was PlayerVisualRepresentation in SPT 3.9 (EFT 0.14.9)
+		// Was LastPlayerStateClass in SPT 4.0; SPT 4.1's fuller client deobfuscation reverted the name
+		// back to PlayerVisualRepresentation (its name in SPT 3.9 / EFT 0.14.9).
 		protected override MethodBase GetTargetMethod()
 		{
 			foreach (var method in typeof(PlayerModelView).GetMethods())
@@ -15,7 +16,7 @@ namespace Transmog
 				var parameters = method.GetParameters();
 				if (method.Name == "Show" &&
 					parameters.Length == 6 &&
-				    parameters[0].ParameterType == typeof(LastPlayerStateClass))
+				    parameters[0].ParameterType == typeof(PlayerVisualRepresentation))
 				{
 					Plugin.LogInfo("Found PlayerModelView Show method.");
 					return method;
@@ -26,7 +27,7 @@ namespace Transmog
 		}
 
 		[PatchPrefix]
-		public static void Prefix(ref LastPlayerStateClass __0)
+		public static void Prefix(ref PlayerVisualRepresentation __0)
 		{
 			Plugin.LogDebug("On PlayerModelViewPatch Show()");
 			if (Plugin.GetPlayerPmcProfile() == null)
@@ -49,7 +50,7 @@ namespace Transmog
 				return;
 			}
 			Plugin.LogDebug("Is player");
-			var newVisual = new LastPlayerStateClass(__0.Info, __0.Customization, Plugin.CloneAndModifyEquipmentClass(__0.Equipment, __0.Info.Side == EPlayerSide.Savage));
+			var newVisual = new PlayerVisualRepresentation(__0.Info, __0.Customization, Plugin.CloneAndModifyEquipmentClass(__0.Equipment, __0.Info.Side == EPlayerSide.Savage));
 			__0 = newVisual;
 		}
 	}

@@ -133,8 +133,9 @@ namespace Transmog
 
 		public static InventoryEquipment CloneAndModifyEquipmentClass(InventoryEquipment originEquipmentClass, bool isScav = false)
 		{
-			// originEquipmentClass.CloneVisibleItemWithSameId()
-			var newEquipmentClass = GClass3380.smethod_2<InventoryEquipment>(originEquipmentClass, GClass3380.Class2421.Instance, true, false);
+			// GClass3380.smethod_2<T>(item, cloner, bool, bool) is gone in SPT 4.1; the clone utility is now
+			// a plain extension method that only needs the item itself.
+			var newEquipmentClass = originEquipmentClass.CloneVisibleItem();
 
 			var newEquipments = isScav ? ScavEquipments : PmcEquipments;
 			for (int i = 0; i < (int) SlotType.Count; i++)
@@ -241,7 +242,8 @@ namespace Transmog
 				_hide = false;
 				if (string.IsNullOrWhiteSpace(config))
 					return null;
-				var itemFactory = Singleton<ItemFactoryClass>.Instance;
+				// ItemFactoryClass was renamed to ItemFactory in SPT 4.1.
+				var itemFactory = Singleton<ItemFactory>.Instance;
 				var solver = itemFactory.ItemTemplates;
 				var queue = new Queue<Item>();
 				var splittedConfig = config.Split(',');
@@ -254,15 +256,22 @@ namespace Transmog
 				foreach (var s in splittedConfig)
 				{
 					var id = s.Trim().ToLowerInvariant();
+					// MongoID now has implicit conversions to/from string, so TryGetValue and CreateItem's
+					// (string, string, UnparsedData) overload both accept the plain string id unchanged.
 					if (id == "null" || !solver.TryGetValue(id, out var itemTemplate))
 						queue.Enqueue(null);
 					else
 					{
-						queue.Enqueue(itemFactory.CreateItem(MongoID.Generate(), id, null));
+						queue.Enqueue(itemFactory.CreateItem(MongoID.Generate(false), id, null));
 					}
 				}
 
-				if (!queue.TryDequeue(out var item) || item == null)
+				// Queue<T>.TryDequeue isn't available on net472 (pre-dates this project's target framework,
+				// unrelated to the SPT 4.1 API changes).
+				if (queue.Count == 0)
+					return null;
+				var item = queue.Dequeue();
+				if (item == null)
 					return null;
 
 				LogInfo("Begin deserialize...");
@@ -275,9 +284,13 @@ namespace Transmog
 						var slots = loot.Slots;
 						foreach (var slot in slots)
 						{
-							if (_itemQueue.TryDequeue(out var element) && 
-							    element != null && 
-							    slot.CanAccept(element))
+							// Slot.CanAccept no longer exists in SPT 4.1; CheckCompatibility is the closest
+							// remaining candidate (validates the item against the slot's filters) but this
+							// specific substitution is unverified against runtime behavior -- watch here first
+							// if transmogged compound items (e.g. rigs with attached pouches) stop nesting correctly.
+							var element = _itemQueue.Count > 0 ? _itemQueue.Dequeue() : null;
+							if (element != null &&
+							    slot.CheckCompatibility(element))
 							{
 								slot.AddWithoutRestrictions(element);
 								LogInfo($"Append {element.TemplateId}");

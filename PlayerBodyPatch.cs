@@ -161,13 +161,13 @@ namespace Transmog
 		{
 			protected override MethodBase GetTargetMethod()
 			{
-				// was method_16 in SPT 3.8
-				// was method_27 in SPT 3.9
-				var method = AccessTools.Method(typeof(HideoutPlayerOwner), "method_34", new [] { typeof(bool) });
+				// was method_16 in SPT 3.8, method_27 in SPT 3.9, method_34 in SPT 4.0;
+				// SPT 4.1's client deobfuscation gave it its real name.
+				var method = AccessTools.Method(typeof(HideoutPlayerOwner), "HideSkinsForGym", new [] { typeof(bool) });
 				if (method != null)
-					Plugin.LogInfo("Found HideoutPlayerOwner method_34 method.");
+					Plugin.LogInfo("Found HideoutPlayerOwner HideSkinsForGym method.");
 				else
-					Plugin.LogError("Unable to find HideoutPlayerOwner method_34 method.");
+					Plugin.LogError("Unable to find HideoutPlayerOwner HideSkinsForGym method.");
 				return method;
 			}
 

@@ -33,7 +33,7 @@ namespace Transmog
 			{
 				if (codeInstruction.opcode == OpCodes.Stfld &&
 				    codeInstruction.operand is FieldInfo fieldInfo &&
-				    fieldInfo.Name == "profile_1")
+				    fieldInfo.Name == "_profile")
 				{
 					yield return new CodeInstruction(OpCodes.Dup);
 					yield return new CodeInstruction(OpCodes.Call,
